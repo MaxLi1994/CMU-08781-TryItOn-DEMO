@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<!-- saved from url=(0056)https://www.auduno.com/clmtrackr/examples/face_mask.html -->
+<html lang="en" class="gr__auduno_com">
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>Face mask</title>
+
+	<style>
+		/* @import url(https://fonts.googleapis.com/css?family=Lato:300italic,700italic,300,700); */
+
+		body {
+			font-family: 'Lato';
+			background-color: #f0f0f0;
+			margin: 0px auto;
+			max-width: 360px;
+
+			overflow: hidden;
+		}
+
+
+		#overlay,
+		#webgl,
+		#custom {
+			position: absolute;
+			top: 0px;
+			left: 0px;
+			-o-transform: scaleX(-1);
+			-webkit-transform: scaleX(-1);
+			transform: scaleX(-1);
+			-ms-filter: fliph;
+			/*IE*/
+			filter: fliph;
+			/*IE*/
+		}
+
+		#videoel {
+			-o-transform: scaleX(-1);
+			-webkit-transform: scaleX(-1);
+			transform: scaleX(-1);
+			-ms-filter: fliph;
+			/*IE*/
+			filter: fliph;
+			/*IE*/
+		}
+
+		#container {
+			position: relative;
+			/* width: 370px; */
+			/*margin : 0px auto;*/
+		}
+
+
+
+		.masks {
+			display: none;
+		}
+
+		.nogum {
+			display: none;
+		}
+
+		.btn {
+			font-family: 'Lato';
+			font-size: 16px;
+		}
+
+		.hide {
+			display: none;
+		}
+
+		.nohide {
+			display: block;
+		}
+
+		#glass-selection {
+			position: relative;
+			width: 360px;
+
+			overflow: auto;
+		}
+
+		#glass-selection .glass-ul {
+			list-style: none;
+			margin: 0;
+			padding: 0;
+			width: 2000px;
+		}
+
+		#glass-selection .glass-ul li {
+			float: left;
+			width: 200px;
+			height: 100px;
+		}
+
+		#glass-selection .glass-ul li img {
+			position: relative;
+			display: block;
+			width: 100%;
+		}
+	</style>
+	<script>
+		// getUserMedia only works over https in Chrome 47+, so we redirect to https. Also notify user if running from file.
+		if (window.location.protocol == "file:") {
+			alert("You seem to be running this example directly from a file. Note that these examples only work when served from a server or localhost due to canvas cross-domain restrictions.");
+		} else if (window.location.hostname !== "localhost" && window.location.protocol !== "https:") {
+			window.location.protocol = "https";
+		}
+	</script>
+
+</head>
+
+<body data-gr-c-s-loaded="true">
+	<script src="./Face mask_files/dat.gui.min.js"></script>
+	<script src="./Face mask_files/utils.js"></script>
+	<script src="./Face mask_files/webgl-utils.js"></script>
+	<script src="./Face mask_files/clmtrackr.js"></script>
+	<script src="./Face mask_files/model_pca_20_svm.js"></script>
+	<script src="./Face mask_files/Stats.js"></script>
+	<script src="./Face mask_files/face_deformer.js"></script>
+	<div id="content">
+		<div id="container" style="overflow:hidden;height:480px;width:360px;">
+			<video id="videoel" width="360" preload="auto" playsinline="" autoplay="">
+			</video>
+			<canvas id="custom" width="360"></canvas>
+			<!-- <div style="cursor: pointer; width: 80px; opacity: 0.9; z-index: 10001; position: absolute; top: 0px;">
+				<div style="text-align: left; line-height: 1.2em; background-color: rgb(8, 8, 24); padding: 0px 0px 3px 3px;">
+					<div style="font-family: Helvetica, Arial, sans-serif; font-size: 9px; color: rgb(0, 255, 255); font-weight: bold;">FPS</div>
+					<div style="position: relative; width: 74px; height: 30px; background-color: rgb(0, 255, 255);">
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+						<span style="width: 1px; height: 30px; float: left; background-color: rgb(16, 16, 48);"></span>
+					</div>
+				</div>
+				<div style="text-align: left; line-height: 1.2em; background-color: rgb(8, 24, 8); padding: 0px 0px 3px 3px; display: none;">
+					<div style="font-family: Helvetica, Arial, sans-serif; font-size: 9px; color: rgb(0, 255, 0); font-weight: bold;">MS</div>
+					<div style="position: relative; width: 74px; height: 30px; background-color: rgb(0, 255, 0);">
+						<span style="width: 1px; height: 15.0619px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 5.58808px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 18.4621px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 3.99001px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 12.5622px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 10.1051px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 27.1497px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 13.9111px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 17.0192px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 23.8734px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 25.5553px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 15.1485px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 17.7058px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 15.1645px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 23.3353px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 22.4635px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 4.83368px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 13.9075px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 5.73114px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 8.73171px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 22.341px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 25.5209px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 22.0403px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 20.2814px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 9.98656px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 9.76839px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 25.3209px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 3.47407px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 9.17947px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 28.0112px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 29.6803px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 24.9112px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 19.6944px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 20.7615px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 21.5742px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 28.8156px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 2.0055px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 21.1508px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 8.21369px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 8.56588px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 9.53934px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 10.4742px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 4.72962px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 22.9997px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 26.5902px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 21.9837px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 15.8276px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 4.72386px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 15.1653px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 0.0528979px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 23.9431px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 9.3628px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 2.22205px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 11.6485px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 24.7988px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 23.3325px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 29.8753px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 2.86379px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 21.4884px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 24.3337px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 22.3296px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 14.0247px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 19.2228px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 5.15367px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 10.4334px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 4.2995px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 7.67225px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 15.1548px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 0.817535px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 13.4893px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 17.6171px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 25.7639px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 21.9741px; float: left; background-color: rgb(16, 48, 16);"></span>
+						<span style="width: 1px; height: 27.7354px; float: left; background-color: rgb(16, 48, 16);"></span>
+					</div>
+				</div>
+			</div> -->
+		</div>
+		<div id="glass-selection">
+			<ul class="glass-ul">
+				<li onclick="switchGlasses(0);">
+					<img src="./Face mask_files/glasses/0.png" alt="">
+				</li>
+				<li onclick="switchGlasses(1);">
+					<img src="./Face mask_files/glasses/1.png" alt="">
+				</li>
+				<li onclick="switchGlasses(2);">
+					<img src="./Face mask_files/glasses/2.png" alt="">
+				</li>
+				<li onclick="switchGlasses(3);">
+					<img src="./Face mask_files/glasses/3.png" alt="">
+				</li>
+				<li onclick="switchGlasses(4);">
+					<img src="./Face mask_files/glasses/4.png" alt="">
+				</li>
+				<li onclick="switchGlasses(5);">
+					<img src="./Face mask_files/glasses/5.png" alt="">
+				</li>
+				<li onclick="switchGlasses(6);">
+					<img src="./Face mask_files/glasses/6.png" alt="">
+				</li>
+			</ul>
+
+		</div>
+		<input class="btn" type="button" value="start" onclick="startVideo()" id="startbutton" style="display:none;">
+
+		<script>
+			var vid = document.getElementById('videoel');
+			var vid_width = vid.width;
+			var vid_height = vid.height;
+			var custom = document.getElementById('custom');
+			var customCC = custom.getContext('2d');
+
+			/*********** Setup of video/webcam and checking for webGL support *********/
+
+			function enablestart() {
+				var startbutton = document.getElementById('startbutton');
+				startbutton.value = "start";
+				startbutton.disabled = null;
+			}
+
+
+			function adjustVideoProportions() {
+				// resize overlay and video if proportions are not 4:3
+				// keep same height, just change width
+				var proportion = vid.videoHeight / vid.videoWidth;
+				vid_height = Math.round(vid_width * proportion);
+				vid.height = vid_height;
+				custom.height = vid_height;
+			}
+
+			function gumSuccess(stream) {
+				// add camera stream if getUserMedia succeeded
+				if ("srcObject" in vid) {
+					vid.srcObject = stream;
+				} else {
+					vid.src = (window.URL && window.URL.createObjectURL(stream));
+				}
+				vid.onloadedmetadata = function () {
+					adjustVideoProportions();
+					vid.play();
+				}
+				vid.onresize = function () {
+					adjustVideoProportions();
+					if (trackingStarted) {
+						ctrack.stop();
+						ctrack.reset();
+						ctrack.start(vid);
+					}
+				}
+			}
+
+			function gumFail(e) {
+				console.log(e)
+				// fall back to video if getUserMedia failed
+				alert("There was some problem trying to fetch video from your webcam, using a fallback video instead.");
+			}
+
+			navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
+			window.URL = window.URL || window.webkitURL || window.msURL || window.mozURL;
+
+			// check for camerasupport
+			var videoOptions = {
+				optional: [
+					{ minWidth: 320 },
+					{ minWidth: 640 },
+					{ minWidth: 1024 },
+					{ minWidth: 1280 },
+					{ minWidth: 1920 },
+					{ minWidth: 2560 },
+				]
+			};
+			if (navigator.mediaDevices) {
+				navigator.mediaDevices.getUserMedia({ video: videoOptions }).then(gumSuccess).catch(gumFail);
+			} else if (navigator.getUserMedia) {
+				navigator.getUserMedia({ video: videoOptions }, gumSuccess, gumFail);
+			} else {
+				alert("Your browser does not seem to support getUserMedia, using a fallback video instead.");
+			}
+
+			vid.addEventListener('canplay', enablestart, false);
+
+			/*********** Code for face tracking and face masking *********/
+
+			var ctrack = new clm.tracker();
+			ctrack.init(pModel);
+			ctrack.setResponseMode("blend", ["lbp", "sobel"]);
+			var trackingStarted = false;
+
+			function startVideo() {
+				// start video
+				vid.play();
+				// start tracking
+				ctrack.start(vid);
+				trackingStarted = true;
+				// start drawing face grid
+				// drawGridLoop();
+				drawCustom();
+			}
+
+			function switchGlasses(index) {
+				currentGlass = index;
+				testGlassImg.src = GLASS_IMAGE_PREFIX + index + '.png';
+			}
+			// --------
+			const EYE_POSITION = [
+				[0.45, 0.32],
+				[0.45, 0.32],
+				[0.45, 0.32],
+				[0.45, 0.32],
+				[0.45, 0.32],
+				[0.45, 0.32],
+				[0.45, 0.32]
+			];
+			const GLASS_IMAGE_PREFIX = './Face mask_files/glasses/';
+
+			var currentGlass = 0;
+			var testGlassImg = new Image();
+			switchGlasses(currentGlass);
+			// --------
+
+			function drawCustom() {
+				positions = ctrack.getCurrentPosition();
+				customCC.clearRect(0, 0, vid_width, vid_height);
+
+				if (positions) {
+					var leftEyePoint = positions[32];
+					var rightEyePoint = positions[27];
+
+					var realWidth = (leftEyePoint[0] - rightEyePoint[0]) / (1 - 2 * EYE_POSITION[currentGlass][1]);
+					var realHeight = testGlassImg.height * (realWidth / testGlassImg.width);
+
+					var centerPoint = [(rightEyePoint[0] + leftEyePoint[0]) / 2, (rightEyePoint[1] + leftEyePoint[1]) / 2];
+					var rotateDegree = Math.atan2(leftEyePoint[1] - rightEyePoint[1], leftEyePoint[0] - rightEyePoint[0]);
+					// customCC.fillStyle = 'green';
+					customCC.save();
+					customCC.translate(centerPoint[0], centerPoint[1]);
+					customCC.rotate(rotateDegree);
+					customCC.translate(-centerPoint[0], -centerPoint[1]);
+					// customCC.fillRect(leftEyePoint[0], leftEyePoint[1], 2, 2);
+
+					customCC.drawImage(testGlassImg, rightEyePoint[0] - realWidth * EYE_POSITION[currentGlass][1], rightEyePoint[1] - realHeight * EYE_POSITION[currentGlass][0], realWidth, realHeight);
+					customCC.restore();
+					// customCC.fillRect(leftEyePoint[0], leftEyePoint[1], 2, 2);
+					// customCC.fillRect(rightEyePoint[0], rightEyePoint[1], 2, 2);
+				}
+
+				requestAnimFrame(drawCustom);
+			}
+
+			setTimeout(() => {
+				startVideo();
+			}, 5000);
+
+			/*********** Code for stats **********/
+
+			// stats = new Stats();
+			// stats.domElement.style.position = 'absolute';
+			// stats.domElement.style.top = '0px';
+			// document.getElementById('container').appendChild(stats.domElement);
+
+			// document.addEventListener("clmtrackrIteration", function (event) {
+			// 	stats.update();
+			// }, false);
+
+		</script>
+	</div>
+
+</body>
+
+
+</html>
